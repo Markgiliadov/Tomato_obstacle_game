@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    tools:ignore="ExtraText"
+    android:background="@drawable/toon_road_texture">
+
+    //Life Tab show strikes;
+
+    <LinearLayout
+        android:id="@+id/Life"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end">
+
+            <ImageView
+                android:id="@+id/heart1"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/tomato_life"   />
+
+            <ImageView
+                android:id="@+id/heart2"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/tomato_life"   />
+
+            <ImageView
+                android:id="@+id/heart3"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/tomato_life"  />
+
+
+        </LinearLayout>
+
+//Actual game screen
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        >
+        //leftCar
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/leftObstacle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/leftObstacle2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/leftObstacle3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/leftObstacle4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tomato_obstacle"
+                    android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/Boom1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/tomato_boom" />
+
+                <ImageView
+                    android:id="@+id/LeftCar"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:src="@drawable/tomato_fighter"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        //centerCar
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:visibility="invisible"
+                    android:id="@+id/centerObstacle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/centerObstacle2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/centerObstacle3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/centerObstacle4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tomato_obstacle"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/Boom2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/tomato_boom" />
+
+                <ImageView
+
+                    android:id="@+id/CenterCar"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tomato_fighter" />
+            </LinearLayout>
+        </LinearLayout>
+        //rightCar
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/rightObstacle1"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/rightObstacle2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:src="@drawable/tomato_obstacle" />
+            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="145dp"
+                    android:orientation="vertical">
+            <ImageView
+                android:id="@+id/rightObstacle3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:src="@drawable/tomato_obstacle" />
+                </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/rightObstacle4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tomato_obstacle"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/Boom3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/tomato_boom" />
+
+                <ImageView
+                    android:id="@+id/RightCar"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:src="@drawable/tomato_fighter"
+                    android:visibility="invisible" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+//left and right screen
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ArrowL"
+            android:layout_width="1dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:layout_margin="60dp"
+            android:src="@drawable/left_button" />
+
+
+        <ImageButton
+            android:id="@+id/ArrowR"
+            android:layout_width="1dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:layout_margin="60dp"
+            android:src="@drawable/right_button" />
+    </LinearLayout>
+
+
+
+</LinearLayout>
