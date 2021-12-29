@@ -22,6 +22,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="end">
 
+            <TextView
+                android:id="@+id/speed_id"
+                android:layout_width="28dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
             <ImageView
                 android:id="@+id/heart1"
                 android:layout_width="0dp"
@@ -49,7 +55,7 @@
 
         </LinearLayout>
 
-//Actual game screen
+        //Actual game screen
     </LinearLayout>
 
     <LinearLayout
@@ -294,24 +300,41 @@
             android:id="@+id/ArrowL"
             android:layout_width="1dp"
             android:layout_height="50dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
-            android:layout_margin="60dp"
             android:src="@drawable/left_button" />
 
+
+        <Button
+            android:id="@+id/slowSpeed"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickSlower"
+            android:text="Slower" />
+
+        <Button
+            android:id="@+id/fastSpeed"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickFaster"
+            android:text="Faster" />
 
         <ImageButton
             android:id="@+id/ArrowR"
             android:layout_width="1dp"
             android:layout_height="50dp"
+            android:layout_margin="20dp"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
-            android:layout_margin="60dp"
             android:src="@drawable/right_button" />
+
     </LinearLayout>
 
 

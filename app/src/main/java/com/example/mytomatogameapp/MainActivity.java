@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -11,6 +12,7 @@ import android.os.Vibrator;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Timer;
@@ -25,38 +27,71 @@ public class MainActivity extends AppCompatActivity {
     ImageView[] boom;
     ImageButton arrowL, arrowR;
     ImageView[] hearts ;
-
-
+    Timer timer ;
+    TimerTask timerTask;
+    TextView speedText ;
 
     boolean isLeft,isCenter, isRight;
 
-    private  static final int SPEED=800;
+    private static int SPEED=600;
     private int clock=0;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initView();
-        MoveCar();
+    public void onClickSlower(View v) throws InterruptedException {
+        this.timer.cancel();
+        SPEED+=200;
+        this.speedText.setText(""+SPEED);
+        this.timer = new Timer();
+        createTaskTimer();
+        setTicks(this.timer);
     }
 
-    private void startTicker() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+    public void onClickFaster(View v){
+        this.timer.cancel();
+        SPEED-=200;
+        this.speedText.setText(""+SPEED);
+        this.timer = new Timer();
+        createTaskTimer();
+        setTicks(this.timer);
+    }
+    public void createTaskTimer(){
+        this.timerTask = new TimerTask() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void run() {
                 runOnUiThread(() -> moveObstacles());
             }
-        },0, SPEED);
+        };
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        this.speedText = (TextView)findViewById(R.id.speed_id);
+        this.speedText.setText (""+SPEED);
+        initView();
+        MoveCar();
+    }
+
+    private void setTicks(Timer myTimer){
+        myTimer.scheduleAtFixedRate(this.timerTask,SPEED, SPEED);
+    }
+    private void startTicker() {
+        timer = new Timer();
+        setTicks(timer);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        this.timerTask = new TimerTask() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                runOnUiThread(() -> moveObstacles());
+            }
+        };
         startTicker();
     }
 
@@ -172,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     void restartGame(){
+        setTicks(timer);
         numberOfLife=2;
             for (int i=0;i<3;i++){
                 hearts[i].setVisibility(View.VISIBLE);
@@ -182,8 +218,11 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     void checkHit() {
         if (numberOfLife<0){
-            Toast.makeText(this,"Game over, Restarting",Toast.LENGTH_SHORT).show();
-            restartGame();
+            Toast.makeText(this,"Game over",Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, MainMenu.class);
+            startActivity(i);
+            this.timer.cancel();
+//            restartGame();
         }
         if (obstacles[2][3].getVisibility() == View.VISIBLE&&Cars[0].getVisibility()==View.VISIBLE) {
             Cars[0].setVisibility(View.GONE);
