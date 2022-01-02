@@ -1,10 +1,11 @@
 package com.example.mytomatogameapp;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -15,13 +16,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    public enum DirectionAction {LEFT, RIGHT}
     private int numberOfLife=2;
-
     ImageView[] Cars;
     ImageView[][] obstacles;
     ImageView[] boom;
@@ -30,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
     Timer timer ;
     TimerTask timerTask;
     TextView speedText ;
+    long last_time;
 
+    private SensorManager sensorManager;
+    Sensor mySensor;
     boolean[] booleanLocations = new boolean[5];
 
     private static int SPEED=600;
@@ -38,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickSlower(View v) throws InterruptedException {
         this.timer.cancel();
-        SPEED+=200;
+        if(SPEED<2600)
+            SPEED+=200;
         this.speedText.setText(""+SPEED);
         this.timer = new Timer();
         createTaskTimer();
@@ -46,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
     }
     public void onClickFaster(View v){
         this.timer.cancel();
-        SPEED-=200;
+        if(SPEED>200)
+            SPEED-=200;
         this.speedText.setText(""+SPEED);
         this.timer = new Timer();
         createTaskTimer();
@@ -64,14 +72,41 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //My time
+        last_time = System.nanoTime();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mySensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(MainActivity.this, mySensor, 2000000);
         this.speedText = (TextView)findViewById(R.id.speed_id);
         this.speedText.setText (""+SPEED);
         initView();
         MoveCar();
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i){
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent){
+        double x = sensorEvent.values[0]*0.7;
+
+        long time = System.nanoTime();
+        int delta_time = (int)((time - last_time) / 1000000);
+        if ( x>=1.8 && delta_time > 450) {
+            last_time = time;
+            moveLeft();
+        } else if (x < -1.8 && delta_time > 450 ) {
+            last_time = time;
+            moveRight();
+        }
+
+    }
     private void setTicks(Timer myTimer){
         myTimer.scheduleAtFixedRate(this.timerTask,SPEED, SPEED);
     }
@@ -185,128 +220,114 @@ public class MainActivity extends AppCompatActivity {
         arrowL.setOnClickListener(e -> {
             checkWhereIsCar();
             checkHit();
+            moveLeft();
 //            for (int i = 0; i < booleanLocations; i++) {
 //
 //            }
-            if (booleanLocations[4]) {
-                Cars[3].setVisibility(View.VISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[3] = true;
-                booleanLocations[4]=false;
-                booleanLocations[2]=false;
-                booleanLocations[1]=false;
-                booleanLocations[0]=false;
-
-            } else if (booleanLocations[3]) {
-                Cars[2].setVisibility(View.VISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[2] = true;
-                booleanLocations[3]=false;
-                booleanLocations[4]=false;
-                booleanLocations[1]=false;
-                booleanLocations[0]=false;
-            } else if (booleanLocations[2]) {
-                Cars[1].setVisibility(View.VISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[1] = true;
-                booleanLocations[2]=false;
-                booleanLocations[3]=false;
-                booleanLocations[4]=false;
-                booleanLocations[0]=false;
-
-            } else if (booleanLocations[1]) {
-                Cars[0].setVisibility(View.VISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                booleanLocations[0] = true;
-                booleanLocations[1]=false;
-                booleanLocations[2]=false;
-                booleanLocations[3]=false;
-                booleanLocations[4]=false;
-            }
-//            else if (booleanLocations[0]) {
-//                Cars[1].setVisibility(View.INVISIBLE);
-//                Cars[0].setVisibility(View.VISIBLE);
-//                isCenter=false;
-//                isLeft=true;
-//            }
-
         });
         arrowR.setOnClickListener(e -> {
             checkWhereIsCar();
             checkHit();
-//            if (isCenter) {
-//                Cars[1].setVisibility(View.INVISIBLE);
-//                Cars[2].setVisibility(View.VISIBLE);
-//                isCenter = false;
-//                isRight=true;
-//            } else if (isLeft) {
-//                Cars[1].setVisibility(View.VISIBLE);
-//                Cars[0].setVisibility(View.INVISIBLE);
-//                isCenter=true;
-//                isLeft=false;
-//            }
-
-            if (booleanLocations[0]) {
-                Cars[1].setVisibility(View.VISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[1] = true;
-                booleanLocations[2]=false;
-                booleanLocations[3]=false;
-                booleanLocations[4]=false;
-                booleanLocations[0]=false;
-
-            } else if (booleanLocations[1]) {
-                Cars[2].setVisibility(View.VISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[2] = true;
-                booleanLocations[3]=false;
-                booleanLocations[4]=false;
-                booleanLocations[1]=false;
-                booleanLocations[0]=false;
-            } else if (booleanLocations[2]) {
-                Cars[3].setVisibility(View.VISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[4].setVisibility(View.INVISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                booleanLocations[3] = true;
-                booleanLocations[2]=false;
-                booleanLocations[1]=false;
-                booleanLocations[4]=false;
-                booleanLocations[0]=false;
-            } else if (booleanLocations[3]) {
-                Cars[4].setVisibility(View.VISIBLE);
-                Cars[0].setVisibility(View.INVISIBLE);
-                Cars[1].setVisibility(View.INVISIBLE);
-                Cars[2].setVisibility(View.INVISIBLE);
-                Cars[3].setVisibility(View.INVISIBLE);
-                booleanLocations[4] = true;
-                booleanLocations[1]=false;
-                booleanLocations[2]=false;
-                booleanLocations[3]=false;
-                booleanLocations[0]=false;
-            }
+            moveRight();
         });
     }
+    void moveLeft(){
+        if (booleanLocations[4]) {
+            Cars[3].setVisibility(View.VISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[3] = true;
+            booleanLocations[4]=false;
+            booleanLocations[2]=false;
+            booleanLocations[1]=false;
+            booleanLocations[0]=false;
 
+        } else if (booleanLocations[3]) {
+            Cars[2].setVisibility(View.VISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[2] = true;
+            booleanLocations[3]=false;
+            booleanLocations[4]=false;
+            booleanLocations[1]=false;
+            booleanLocations[0]=false;
+        } else if (booleanLocations[2]) {
+            Cars[1].setVisibility(View.VISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[1] = true;
+            booleanLocations[2]=false;
+            booleanLocations[3]=false;
+            booleanLocations[4]=false;
+            booleanLocations[0]=false;
+
+        } else if (booleanLocations[1]) {
+            Cars[0].setVisibility(View.VISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            booleanLocations[0] = true;
+            booleanLocations[1]=false;
+            booleanLocations[2]=false;
+            booleanLocations[3]=false;
+            booleanLocations[4]=false;
+        }
+    }
+    void moveRight(){
+        if (booleanLocations[0]) {
+            Cars[1].setVisibility(View.VISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[1] = true;
+            booleanLocations[2]=false;
+            booleanLocations[3]=false;
+            booleanLocations[4]=false;
+            booleanLocations[0]=false;
+
+        } else if (booleanLocations[1]) {
+            Cars[2].setVisibility(View.VISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[2] = true;
+            booleanLocations[3]=false;
+            booleanLocations[4]=false;
+            booleanLocations[1]=false;
+            booleanLocations[0]=false;
+        } else if (booleanLocations[2]) {
+            Cars[3].setVisibility(View.VISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[4].setVisibility(View.INVISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            booleanLocations[3] = true;
+            booleanLocations[2]=false;
+            booleanLocations[1]=false;
+            booleanLocations[4]=false;
+            booleanLocations[0]=false;
+        } else if (booleanLocations[3]) {
+            Cars[4].setVisibility(View.VISIBLE);
+            Cars[0].setVisibility(View.INVISIBLE);
+            Cars[1].setVisibility(View.INVISIBLE);
+            Cars[2].setVisibility(View.INVISIBLE);
+            Cars[3].setVisibility(View.INVISIBLE);
+            booleanLocations[4] = true;
+            booleanLocations[1]=false;
+            booleanLocations[2]=false;
+            booleanLocations[3]=false;
+            booleanLocations[0]=false;
+        }
+    }
 
     void restartGame(){
         setTicks(timer);
