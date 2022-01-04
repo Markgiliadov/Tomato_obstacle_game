@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -25,8 +26,10 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     public enum DirectionAction {LEFT, RIGHT}
     private int numberOfLife=2;
+    private MediaPlayer explosionSound, gameOverSound, coinSound;
     ImageView[] Cars;
     ImageView[][] obstacles;
+    ImageView[][] coins;
     ImageView[] boom;
     ImageButton arrowL, arrowR;
     ImageView[] hearts ;
@@ -72,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         //My time
         last_time = System.nanoTime();
         super.onCreate(savedInstanceState);
@@ -173,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         checkHit();
     }
     public  void hideBooms(){
-
         for (int i=0;i<5;i++){
             boom[i].setVisibility(View.GONE);
         }
@@ -206,11 +207,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 {findViewById(R.id.rightObstacle1),findViewById(R.id.rightObstacle2),findViewById(R.id.rightObstacle3),findViewById(R.id.rightObstacle4)}
 
         };
+
+//        coins = new ImageView[][]{
+//                {findViewById(R.id.leftObstacle11), findViewById(R.id.leftObstacle12), findViewById(R.id.leftObstacle13),findViewById(R.id.leftObstacle14)},
+//                {findViewById(R.id.leftObstacle21), findViewById(R.id.leftObstacle22), findViewById(R.id.leftObstacle23),findViewById(R.id.leftObstacle24)},
+//                {findViewById(R.id.leftObstacle31), findViewById(R.id.leftObstacle32), findViewById(R.id.leftObstacle33),findViewById(R.id.leftObstacle34)},
+//                {findViewById(R.id.centerObstacle1),findViewById(R.id.centerObstacle2),findViewById(R.id.centerObstacle3),findViewById(R.id.centerObstacle4)},
+//                {findViewById(R.id.rightObstacle1),findViewById(R.id.rightObstacle2),findViewById(R.id.rightObstacle3),findViewById(R.id.rightObstacle4)}
+//
+//        };
         arrowR=findViewById(R.id.ArrowR);
         arrowL=findViewById(R.id.ArrowL);
         boom=new ImageView[]{
                 findViewById(R.id.Boom11),findViewById(R.id.Boom21),findViewById(R.id.Boom31),findViewById(R.id.Boom2),findViewById(R.id.Boom3)
         };
+//        gameOverSound= MediaPlayer.create(this,R.raw.lose);
+//        explosionSound=MediaPlayer.create(this,R.raw.car_crash);
+//        coinSound=MediaPlayer.create(this,R.raw.coin_crash);
+        gameOverSound = MediaPlayer.create(this,R.raw.gameover);
+        explosionSound = MediaPlayer.create(this, R.raw.squish);
         checkWhereIsCar();
     }
 
@@ -340,7 +355,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void checkHit() {
+
         if (numberOfLife<0){
+            gameOverSound.start();
             Toast.makeText(this,"Game over",Toast.LENGTH_SHORT).show();
             Intent i = new Intent(this, MainMenu.class);
             startActivity(i);
@@ -348,13 +365,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            restartGame();
         }
         if (obstacles[4][3].getVisibility() == View.VISIBLE&&Cars[4].getVisibility()==View.VISIBLE) {
+            explosionSound.start();
             Cars[4].setVisibility(View.GONE);
             obstacles[4][3].setVisibility(View.GONE);
             boom[4].setVisibility(View.VISIBLE);
             hearts[numberOfLife--].setVisibility(View.INVISIBLE);
             toast();
             vibrate();
+
         } else if (obstacles[3][3].getVisibility() == View.VISIBLE&&Cars[3].getVisibility()==View.VISIBLE) {
+            explosionSound.start();
             Cars[3].setVisibility(View.GONE);
             obstacles[3][3].setVisibility(View.GONE);
             boom[3].setVisibility(View.VISIBLE);
@@ -362,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             toast();
             vibrate();
         } else if (obstacles[2][3].getVisibility() == View.VISIBLE&&Cars[2].getVisibility()==View.VISIBLE) {
+            explosionSound.start();
             Cars[2].setVisibility(View.GONE);
             obstacles[2][3].setVisibility(View.GONE);
             boom[2].setVisibility(View.VISIBLE);
@@ -369,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             toast();
             vibrate();
         } else if (obstacles[1][3].getVisibility() == View.VISIBLE&&Cars[1].getVisibility()==View.VISIBLE) {
+            explosionSound.start();
             Cars[1].setVisibility(View.GONE);
             obstacles[1][3].setVisibility(View.GONE);
             boom[1].setVisibility(View.VISIBLE);
@@ -376,6 +398,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             toast();
             vibrate();
         } else if (obstacles[0][3].getVisibility() == View.VISIBLE&&Cars[0].getVisibility()==View.VISIBLE) {
+            explosionSound.start();
             Cars[0].setVisibility(View.GONE);
             obstacles[0][3].setVisibility(View.GONE);
             boom[0].setVisibility(View.VISIBLE);
