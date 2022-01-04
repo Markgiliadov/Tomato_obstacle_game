@@ -15,9 +15,6 @@ public class MainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
         Button restartButton = (Button)findViewById(R.id.restartButton);
         restartButton.setText("Restart");
-
-        Intent i = new Intent(this, MainActivity2.class);
-        startActivity(i);
     }
 
     public void onClickListener(View v){

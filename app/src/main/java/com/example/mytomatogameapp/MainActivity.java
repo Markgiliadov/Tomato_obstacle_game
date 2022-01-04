@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     ImageView[] hearts ;
     Timer timer ;
     TimerTask timerTask;
-    TextView speedText ;
+    TextView speedText, scorePoints;
+    private int score = 0;
     long last_time;
 
     private SensorManager sensorManager;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         //My time
         last_time = System.nanoTime();
         super.onCreate(savedInstanceState);
@@ -83,7 +85,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mySensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(MainActivity.this, mySensor, 2000000);
         this.speedText = (TextView)findViewById(R.id.speed_id);
+        this.scorePoints = (TextView)findViewById((R.id.score_id));
         this.speedText.setText (""+SPEED);
+        this.scorePoints.setText("Score: " + 0);
         initView();
         MoveCar();
     }
@@ -139,16 +143,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (obstacles[i][3].getVisibility()==View.VISIBLE) {
                 obstacles[i][3].setVisibility(View.GONE);
             }
-            for (int j = 2; j >= 0; j--) {
+            if(coins[i][3].getVisibility()==View.VISIBLE)
+                coins[i][3].setVisibility(View.GONE);
+
+            for (int j = 3; j >= 0; j--) {
                 if (obstacles[i][j].getVisibility() == View.VISIBLE) {
-                    obstacles[i][j].setVisibility(View.INVISIBLE);
+                    obstacles[i][j].setVisibility(View.GONE);
                     obstacles[i][j + 1].setVisibility(View.VISIBLE);
                 }
             }
+            for (int j = 3; j >= 0 ; j--) {
+                if(coins[i][j].getVisibility()==View.VISIBLE){
+                    coins[i][j].setVisibility(View.GONE);
+                    coins[i][j + 1].setVisibility(View.VISIBLE);
+                }
+            }
         }
+        int random1=(int) ((Math.random()*5)+1);
+        int random2=(int) ((Math.random()*5)+1);
         if(clock%2==0){
-            int random=(int) ((Math.random()*5)+1);
-            switch(random){
+            switch(random1){
                 case 1:{
                     obstacles[0][0].setVisibility(View.VISIBLE);
                     break;
@@ -172,9 +186,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         }
+
+        if(clock%3==0) {
+            switch (random2) {
+                case 1: {
+                    coins[0][0].setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 2: {
+                    coins[1][0].setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 3: {
+                    coins[2][0].setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 4: {
+                    coins[3][0].setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 5: {
+                    coins[4][0].setVisibility(View.VISIBLE);
+                    break;
+                }
+            }
+        }
         checkHit();
+        checkCoinsHit();
     }
     public  void hideBooms(){
+
         for (int i=0;i<5;i++){
             boom[i].setVisibility(View.GONE);
         }
@@ -205,17 +246,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 {findViewById(R.id.leftObstacle31), findViewById(R.id.leftObstacle32), findViewById(R.id.leftObstacle33),findViewById(R.id.leftObstacle34)},
                 {findViewById(R.id.centerObstacle1),findViewById(R.id.centerObstacle2),findViewById(R.id.centerObstacle3),findViewById(R.id.centerObstacle4)},
                 {findViewById(R.id.rightObstacle1),findViewById(R.id.rightObstacle2),findViewById(R.id.rightObstacle3),findViewById(R.id.rightObstacle4)}
-
         };
 
-//        coins = new ImageView[][]{
-//                {findViewById(R.id.leftObstacle11), findViewById(R.id.leftObstacle12), findViewById(R.id.leftObstacle13),findViewById(R.id.leftObstacle14)},
-//                {findViewById(R.id.leftObstacle21), findViewById(R.id.leftObstacle22), findViewById(R.id.leftObstacle23),findViewById(R.id.leftObstacle24)},
-//                {findViewById(R.id.leftObstacle31), findViewById(R.id.leftObstacle32), findViewById(R.id.leftObstacle33),findViewById(R.id.leftObstacle34)},
-//                {findViewById(R.id.centerObstacle1),findViewById(R.id.centerObstacle2),findViewById(R.id.centerObstacle3),findViewById(R.id.centerObstacle4)},
-//                {findViewById(R.id.rightObstacle1),findViewById(R.id.rightObstacle2),findViewById(R.id.rightObstacle3),findViewById(R.id.rightObstacle4)}
-//
-//        };
+        coins = new ImageView[][]{
+                {findViewById(R.id.leftCoin11), findViewById(R.id.leftCoin12), findViewById(R.id.leftCoin13),findViewById(R.id.leftCoin14)},
+                {findViewById(R.id.leftCoin21), findViewById(R.id.leftCoin22), findViewById(R.id.leftCoin23),findViewById(R.id.leftCoin24)},
+                {findViewById(R.id.leftCoin31), findViewById(R.id.leftCoin32), findViewById(R.id.leftCoin33),findViewById(R.id.leftCoin34)},
+                {findViewById(R.id.centerCoin1),findViewById(R.id.centerCoin2),findViewById(R.id.centerCoin3),findViewById(R.id.centerCoin4)},
+                {findViewById(R.id.rightCoin1),findViewById(R.id.rightCoin2),findViewById(R.id.rightCoin3),findViewById(R.id.rightCoin4)}};
+
         arrowR=findViewById(R.id.ArrowR);
         arrowL=findViewById(R.id.ArrowL);
         boom=new ImageView[]{
@@ -226,27 +265,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        coinSound=MediaPlayer.create(this,R.raw.coin_crash);
         gameOverSound = MediaPlayer.create(this,R.raw.gameover);
         explosionSound = MediaPlayer.create(this, R.raw.squish);
+        coinSound = MediaPlayer.create(this,R.raw.coinsound);
         checkWhereIsCar();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void MoveCar() {
-
         arrowL.setOnClickListener(e -> {
             checkWhereIsCar();
             checkHit();
+            checkCoinsHit();
             moveLeft();
-//            for (int i = 0; i < booleanLocations; i++) {
-//
-//            }
         });
         arrowR.setOnClickListener(e -> {
             checkWhereIsCar();
             checkHit();
+            checkCoinsHit();
             moveRight();
         });
     }
     void moveLeft(){
+
         if (booleanLocations[4]) {
             Cars[3].setVisibility(View.VISIBLE);
             Cars[4].setVisibility(View.INVISIBLE);
@@ -258,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             booleanLocations[2]=false;
             booleanLocations[1]=false;
             booleanLocations[0]=false;
-
         } else if (booleanLocations[3]) {
             Cars[2].setVisibility(View.VISIBLE);
             Cars[3].setVisibility(View.INVISIBLE);
@@ -351,7 +389,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 hearts[i].setVisibility(View.VISIBLE);
             }
         }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    void checkCoinsHit() {
+        if (coins[4][3].getVisibility() == View.VISIBLE&&Cars[4].getVisibility()==View.VISIBLE) {
+            coinSound.start();
+            Cars[4].setVisibility(View.GONE);
+            coins[4][3].setVisibility(View.GONE);
+            vibrate();
+            this.score+=25;
+            this.scorePoints.setText("Score: " + this.score );
+        } else if (coins[3][3].getVisibility() == View.VISIBLE&&Cars[3].getVisibility()==View.VISIBLE) {
+            coinSound.start();
+            Cars[3].setVisibility(View.GONE);
+            coins[3][3].setVisibility(View.GONE);
+            vibrate();
+            this.score+=25;
+            this.scorePoints.setText("Score: " + this.score );
+        } else if (coins[2][3].getVisibility() == View.VISIBLE&&Cars[2].getVisibility()==View.VISIBLE) {
+            coinSound.start();
+            Cars[2].setVisibility(View.GONE);
+            coins[2][3].setVisibility(View.GONE);
+            vibrate();
+            this.score+=25;
+            this.scorePoints.setText("Score: " + this.score );
+        } else if (coins[1][3].getVisibility() == View.VISIBLE&&Cars[1].getVisibility()==View.VISIBLE) {
+            coinSound.start();
+            Cars[1].setVisibility(View.GONE);
+            coins[1][3].setVisibility(View.GONE);
+            vibrate();
+            this.score+=25;
+            this.scorePoints.setText("Score: " + this.score );
+        } else if (coins[0][3].getVisibility() == View.VISIBLE&&Cars[0].getVisibility()==View.VISIBLE) {
+            coinSound.start();
+            Cars[0].setVisibility(View.GONE);
+            coins[0][3].setVisibility(View.GONE);
+            vibrate();
+            this.score+=25;
+            this.scorePoints.setText("Score: " + this.score );
+        }
 
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void checkHit() {
